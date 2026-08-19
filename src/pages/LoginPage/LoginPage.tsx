@@ -71,7 +71,7 @@ export const LoginPage: FC = () => {
           />
           <div className={styles.action}>
             <Button type="submit" variant="contained">
-              Authorization
+              Sign-In
             </Button>
             <Link className="link" to={'/' + ROUTES_APP.signup}>
               SignUp

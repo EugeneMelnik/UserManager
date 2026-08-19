@@ -13,6 +13,15 @@ const { jwtMiddleware } = require('../middleware/jwt.middleware');
 const { deleteUsers } = require('../queries/deleteUsers');
 
 const router = Router();
+let socketServer;
+
+const setSocketServer = (io) => {
+  socketServer = io;
+};
+
+const broadcast = (event, payload) => {
+  socketServer?.emit(event, payload);
+};
 
 router.put('/api/login', async (req, res) => {
   let login = req.body.login;
@@ -41,6 +50,7 @@ router.put('/api/login', async (req, res) => {
     }
 
     await executeQuery(online(user.id));
+    broadcast('user_updated', { ids: [user.id], state: 'online' });
 
     const accessToken = jwt.sign(
       { id: user.id, login: user.login, password: user.password },
@@ -61,6 +71,13 @@ router.post('/api/signup', async (req, res) => {
   try {
     await executeQuery(createUser(req.body));
 
+    const [createdUser] = await executeQuery(
+      find(req.body.login, req.body.password)
+    );
+    const { password: _, ...user } = createdUser;
+
+    broadcast('user_created', user);
+
     return res.status(201).send({ message: 'User was created successfully!' });
   } catch (error) {
     return res.status(400).send(`Signup failed: ${error.message}`);
@@ -74,6 +91,7 @@ router.put('/api/logout', jwtMiddleware, async (req, res) => {
     const { id } = jwt.decode(accessToken, process.env.JWT_SECRET);
 
     await executeQuery(offline(id));
+    broadcast('user_updated', { ids: [id], state: 'offline' });
 
     return res.status(200).send({ message: 'Bye-Bye!' });
   } catch (error) {
@@ -100,6 +118,7 @@ router.put('/api/block', jwtMiddleware, async (req, res) => {
 
   try {
     await executeQuery(blockUsers(ids));
+    broadcast('user_updated', { ids, state: 'blocked' });
 
     return res
       .status(200)
@@ -118,6 +137,7 @@ router.put('/api/unblock', jwtMiddleware, async (req, res) => {
     const query = unblockUsers(ids);
 
     await executeQuery(query);
+    broadcast('user_updated', { ids, state: 'offline' });
 
     return res
       .status(200)
@@ -134,6 +154,7 @@ router.delete('/api/delete', jwtMiddleware, async (req, res) => {
 
   try {
     await executeQuery(deleteUsers(ids));
+    broadcast('user_deleted', { ids });
 
     return res
       .status(200)
@@ -146,3 +167,4 @@ router.delete('/api/delete', jwtMiddleware, async (req, res) => {
 });
 
 module.exports = router;
+module.exports.setSocketServer = setSocketServer;

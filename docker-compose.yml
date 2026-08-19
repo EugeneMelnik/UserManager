@@ -1,0 +1,22 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: user-manager-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB:-user_manager}
+      MYSQL_USER: ${DB_USER:-admin}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-psw}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - user-manager-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${DB_USER:-admin}", "-p${DB_PASSWORD:-psw}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  user-manager-mysql-data:

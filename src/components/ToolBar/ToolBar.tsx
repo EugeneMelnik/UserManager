@@ -27,6 +27,10 @@ export const ToolBar: FC<IToolBar> = ({ selectedRows }) => {
 
   const handleUnblockUsers = async () => {
     await dispatch(unblockUsersThunk(selectedRows));
+
+    socket.instance.emit('unblock', {
+      receiverIds: selectedRows
+    });
   };
 
   const handleDeleteUsers = async () => {
