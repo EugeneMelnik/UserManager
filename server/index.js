@@ -32,6 +32,8 @@ const io = new Server(server, {
   }
 });
 
+router.setSocketServer(io);
+
 io.on('connection', (socket) => {
   console.log('A user connected ' + socket.id);
 

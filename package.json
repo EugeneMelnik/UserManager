@@ -53,6 +53,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "preserver:dev": "docker compose up -d --wait mysql",
     "server:dev": "nodemon ./server",
     "server": "node ./dist",
     "server:build": "webpack",

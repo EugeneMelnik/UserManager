@@ -7,6 +7,8 @@ import { AppDispatch } from '../store';
 
 export const usersActionType = {
   SET_USERS: 'SET_USERS',
+  ADD_USER: 'ADD_USER',
+  UPDATE_USER: 'UPDATE_USER',
   BLOCK_USERS: 'BLOCK_USERS',
   UNBLOCK_USERS: 'UNBLOCK_USERS',
   DELETE_USERS: 'DELETE_USERS'
@@ -14,6 +16,19 @@ export const usersActionType = {
 
 const setUsersAction = (payload: IUser[]) => ({
   type: usersActionType.SET_USERS,
+  payload
+});
+
+export const addUserAction = (payload: IUser) => ({
+  type: usersActionType.ADD_USER,
+  payload
+});
+
+export const updateUserAction = (payload: {
+  ids: number[];
+  state: IUser['state'];
+}) => ({
+  type: usersActionType.UPDATE_USER,
   payload
 });
 
@@ -27,7 +42,7 @@ const unblockUsersAction = (payload: number[]) => ({
   payload
 });
 
-const deleteUsersAction = (payload: number[]) => ({
+export const deleteUsersAction = (payload: number[]) => ({
   type: usersActionType.DELETE_USERS,
   payload
 });
@@ -42,7 +57,9 @@ export const getUsersThunk = () => async (dispatch: AppDispatch) => {
         dispatch(logoutAction());
       }
 
-      toast.error(error.response?.data);
+      toast.error(error.response?.data, {
+        toastId: String(error.response?.data)
+      });
     } else {
       throw error;
     }
@@ -61,7 +78,9 @@ export const blockUsersThunk =
           dispatch(logoutAction());
         }
 
-        toast.error(error.response?.data);
+        toast.error(error.response?.data, {
+          toastId: String(error.response?.data)
+        });
       } else {
         throw error;
       }
@@ -80,7 +99,9 @@ export const unblockUsersThunk =
           dispatch(logoutAction());
         }
 
-        toast.error(error.response?.data);
+        toast.error(error.response?.data, {
+          toastId: String(error.response?.data)
+        });
       } else {
         throw error;
       }
@@ -99,7 +120,9 @@ export const deleteUsersThunk =
           dispatch(logoutAction());
         }
 
-        toast.error(error.response?.data);
+        toast.error(error.response?.data, {
+          toastId: String(error.response?.data)
+        });
       } else {
         throw error;
       }

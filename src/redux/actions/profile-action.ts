@@ -18,7 +18,8 @@ const setProfileAction = (payload: IUser) => ({
 });
 
 export const loginThunk =
-  (credentials?: ICredentials) => async (dispatch: Dispatch<any>) => {
+  (credentials?: ICredentials, showGreeting = true) =>
+  async (dispatch: Dispatch<any>) => {
     try {
       dispatch(isLoadingAction(true));
 
@@ -26,10 +27,14 @@ export const loginThunk =
 
       dispatch(setProfileAction(user));
 
-      toast.success(`Hello ${user.firstName}`);
+      if (showGreeting) {
+        toast.success(`Hello ${user.firstName}`, { toastId: 'login-success' });
+      }
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        toast.error(error.response?.data);
+        toast.error(error.response?.data, {
+          toastId: String(error.response?.data)
+        });
       } else {
         throw error;
       }
@@ -71,7 +76,9 @@ export const logoutThunk = () => async (dispatch: AppDispatch) => {
         dispatch(logoutAction());
       }
 
-      toast.error(error.response?.data);
+      toast.error(error.response?.data, {
+        toastId: String(error.response?.data)
+      });
     } else {
       throw error;
     }
@@ -86,7 +93,9 @@ export const blockMeThunk =
       await requestAPI.block(ids);
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        toast.error(error.response?.data);
+        toast.error(error.response?.data, {
+          toastId: String(error.response?.data)
+        });
       } else {
         throw error;
       }

@@ -11,6 +11,18 @@ export const usersReducer = (state = initialState, action: AnyAction) => {
 
       return stateCopy;
     }
+    case usersActionType.ADD_USER: {
+      if (state.some((user) => user.id === action.payload.id)) return state;
+
+      return [...state, action.payload];
+    }
+    case usersActionType.UPDATE_USER: {
+      return state.map((user) =>
+        action.payload.ids.includes(user.id)
+          ? { ...user, state: action.payload.state }
+          : user
+      );
+    }
     case usersActionType.BLOCK_USERS: {
       const stateCopy = state.map((user) => {
         if (action.payload.includes(user.id)) {
@@ -38,8 +50,8 @@ export const usersReducer = (state = initialState, action: AnyAction) => {
       return stateCopy;
     }
     case usersActionType.DELETE_USERS: {
-      const stateCopy = state.filter((user) =>
-        action.payload.includes(user.id)
+      const stateCopy = state.filter(
+        (user) => !action.payload.includes(user.id)
       );
 
       return stateCopy;

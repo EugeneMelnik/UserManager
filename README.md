@@ -10,7 +10,10 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 npm install
 ```
 
-### Create MySQL database and create .env file according to .env.example file
+### Create a `.env` file according to `.env.example`
+
+The development server automatically starts the MySQL container from
+`docker-compose.yml` and waits until it is ready.
 
 # Dev mode:
 
